@@ -1,20 +1,14 @@
 package com.example
 
-import org.neo4j.driver.{AuthTokens, GraphDatabase}
+import org.neo4j.driver.GraphDatabase
+
 
 object Main {
   def main(args: Array[String]) = {
-    val driver = GraphDatabase.driver("bolt://localhost/7687", AuthTokens.basic("neo4j", "neo4jneo4j"))
-    val session = driver.session()
+    val appConfig = AppConfig(DataBaseConfig("bolt://localhost/7687", Neo4jCredentials("neo4j", "neo4jneo4j")))
+    val userRepository = new UserRepository(appConfig)
 
-    val name = "exampleName"
-    val script = s"CREATE (user:Users {name:'${name}'})"
-
-    val result = session.run(script)
-    session.close()
-    driver.close()
-
-    val res = result.consume()
-    println(res)
+    val users = userRepository.readAll()
+    println(users)
   }
 }

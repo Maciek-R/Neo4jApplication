@@ -14,6 +14,6 @@ http://localhost:7474/browser/
 
 bolt://localhost/7687
 
-Default username and password:
-neo4j
+Default username and password:\
+neo4j\
 neo4j
