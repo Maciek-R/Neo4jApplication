@@ -15,11 +15,7 @@ object Neo4jConverter {
     val constructorArgs = constructor.paramLists.flatten.map((param: Symbol) => {
       val paramName = param.name.toString
       if (param.typeSignature <:< typeOf[Option[Any]]) {
-        val x = m.get(paramName)
-        if(x.isInstanceOf[Option[Null]])
-          None
-        else
-          m.get(paramName)
+          util.Try(m.get(paramName)).toOption.flatten
       } else {
         m.get(paramName).getOrElse(throw new IllegalArgumentException("Map is missing required parameter named " + paramName))
       }

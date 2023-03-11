@@ -16,9 +16,10 @@ object QueryResult {
           if (value.hasType(TypeSystem.getDefault.STRING())) Some((key, value.asString()))
           else if (value.hasType(TypeSystem.getDefault.INTEGER())) Some((key, value.asInt()))
           //todo add other types
-          else None
+          else {
+            None
+          }
       }
-
       fromMap[T](fields.toMap)
     }
   }
