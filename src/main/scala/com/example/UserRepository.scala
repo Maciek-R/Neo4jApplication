@@ -1,5 +1,6 @@
 package com.example
 
+import com.example.CypherInterpolator.CypherOps
 import com.example.User.User
 
 trait UserRepository {
@@ -11,9 +12,10 @@ trait UserRepository {
 
 class UserRepositoryImpl(appConfig: AppConfig) extends UserRepository {
   override def create(user: User): Boolean = {
-    val script = s"CREATE (user:Users{name: '${user.name}', lastName: '${user.lastName.orNull}'})"
+    val query = cypher"CREATE (user:Users{name: ${user.name}, lastName: ${user.lastName}})"
+    println(query)
 
-    val result = Query(script, appConfig).execute { result =>
+    val result = Query(query, appConfig).execute { result =>
       result.consume().counters().nodesCreated() == 1
     }
 
@@ -21,18 +23,18 @@ class UserRepositoryImpl(appConfig: AppConfig) extends UserRepository {
   }
 
   override def getByName(name: String): List[User] = {
-    val script = s"MATCH (user:Users{name: '${name}'}) RETURN user.name as name, user.lastName as lastName"
+    val query = cypher"MATCH (user:Users{name: ${name}}) RETURN user.name as name, user.lastName as lastName"
 
-    val results = Query(script, appConfig).execute { result =>
+    val results = Query(query, appConfig).execute { result =>
       QueryResult.list[User](result)
     }
 
     results
   }
   override def readAll(): List[User] = {
-    val script = s"MATCH (user:Users) RETURN user.name as name, user.lastName as lastName"
+    val query = s"MATCH (user:Users) RETURN user.name as name, user.lastName as lastName"
 
-    val results = Query(script, appConfig).execute{result =>
+    val results = Query(query, appConfig).execute{result =>
       QueryResult.list[User](result)
     }
 
