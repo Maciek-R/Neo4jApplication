@@ -5,14 +5,15 @@ trait FromValue[T] {
 }
 
 object FromValue extends FromValueDerivation {
+  def apply[T](implicit fromValue: FromValue[T]): FromValue[T] = fromValue
 
+  // TODO add more types
   implicit val optStr: FromValue[Option[String]] =
     new Typeclass[Option[String]] {
       override def fromValue(value: Option[Any]): Option[String] = {
         value match {
-          // TODO erasure
-          case Some(x) if x.isInstanceOf[String] => Some(x.asInstanceOf[String])
-          case _                                 => None
+          case Some(v: String) => Some(v)
+          case _               => None
         }
       }
     }
@@ -20,21 +21,26 @@ object FromValue extends FromValueDerivation {
   implicit val str: FromValue[String] = new Typeclass[String] {
     override def fromValue(value: Option[Any]): String = {
       value match {
-        // TODO erasure
-        case Some(x) if x.isInstanceOf[String] => x.asInstanceOf[String]
-        case _                                 => ""
+        case Some(v: String) => v
+        case _               => ""
       }
     }
   }
-//TODO add more types
+
   implicit val int: FromValue[Int] = new Typeclass[Int] {
     override def fromValue(value: Option[Any]): Int =
       value match {
-        // TODO erasure
-        case Some(x) if x.isInstanceOf[Int] => x.asInstanceOf[Int]
-        case _                              => 0
+        case Some(v: Int) => v
+        case _            => 0
       }
   }
 
-  def apply[T](implicit fromValue: FromValue[T]): FromValue[T] = fromValue
+  implicit val optInt: FromValue[Option[Int]] = new Typeclass[Option[Int]] {
+    override def fromValue(value: Option[Any]): Option[Int] = {
+      value match {
+        case Some(v: Int) => Some(v)
+        case _            => None
+      }
+    }
+  }
 }
