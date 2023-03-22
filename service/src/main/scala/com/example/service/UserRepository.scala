@@ -1,7 +1,6 @@
-package com.example
+package com.example.service
 
-import com.example.CypherInterpolator.CypherOps
-import com.example.User.User
+import com.example.service.CypherInterpolator.CypherOps
 
 trait UserRepository {
 

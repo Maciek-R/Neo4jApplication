@@ -1,29 +1,28 @@
-package com.example
+package com.example.service
 
-import com.example.Neo4jConverter.fromMap
-import org.neo4j.driver.{AuthTokens, GraphDatabase, Result}
+import com.example.converter.FromMap
 import org.neo4j.driver.types.TypeSystem
+import org.neo4j.driver.{AuthTokens, GraphDatabase, Result}
 
 import scala.jdk.CollectionConverters._
-import scala.reflect.ClassTag
-import scala.reflect.runtime.universe._
 
 object QueryResult {
-  def list[T: TypeTag: ClassTag](result: Result): List[T] = {
+  def list[T: FromMap](result: Result): List[T] = {
     result.asScala.toList.map { r =>
-      val fields =
+      val fields = {
         r.fields().asScala.toList.map(p => (p.key(), p.value())).flatMap {
           case (key, value) =>
-            if (value.hasType(TypeSystem.getDefault.STRING()))
+            if (value.hasType(TypeSystem.getDefault.STRING())) {
               Some((key, value.asString()))
-            else if (value.hasType(TypeSystem.getDefault.INTEGER()))
+            } else if (value.hasType(TypeSystem.getDefault.INTEGER()))
               Some((key, value.asInt()))
             // todo add other types
             else {
               None
             }
         }
-      fromMap[T](fields.toMap)
+      }
+      implicitly[FromMap[T]].fromMap(fields.toMap)
     }
   }
 }
