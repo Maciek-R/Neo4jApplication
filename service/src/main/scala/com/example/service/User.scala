@@ -2,7 +2,7 @@ package com.example.service
 
 import com.example.converter.{FromMap, FromValue}
 
-case class User(name: String, lastName: Option[String])
+case class User(name: String, lastName: Option[String], isAdmin: Boolean)
 
 object User {
   import com.example.converter.FromMap._

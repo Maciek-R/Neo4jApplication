@@ -12,7 +12,7 @@ trait UserRepository {
 class UserRepositoryImpl(appConfig: AppConfig) extends UserRepository {
   override def create(user: User): Boolean = {
     val query =
-      cypher"CREATE (user:Users{name: ${user.name}, lastName: ${user.lastName}})"
+      cypher"CREATE (user:Users{name: ${user.name}, lastName: ${user.lastName}, isAdmin: ${user.isAdmin}})"
 
     val result = Query(query, appConfig).execute { result =>
       result.consume().counters().nodesCreated() == 1
@@ -23,7 +23,7 @@ class UserRepositoryImpl(appConfig: AppConfig) extends UserRepository {
 
   override def getByName(name: String): List[User] = {
     val query =
-      cypher"MATCH (user:Users{name: ${name}}) RETURN user.name as name, user.lastName as lastName"
+      cypher"MATCH (user:Users{name: ${name}}) RETURN user.name as name, user.lastName as lastName, user.isAdmin as isAdmin"
 
     val results = Query(query, appConfig).execute { result =>
       QueryResult.list[User](result)
@@ -33,7 +33,7 @@ class UserRepositoryImpl(appConfig: AppConfig) extends UserRepository {
   }
   override def readAll(): List[User] = {
     val query =
-      s"MATCH (user:Users) RETURN user.name as name, user.lastName as lastName"
+      s"MATCH (user:Users) RETURN user.name as name, user.lastName as lastName, user.isAdmin as isAdmin"
 
     val results = Query(query, appConfig).execute { result =>
       QueryResult.list[User](result)

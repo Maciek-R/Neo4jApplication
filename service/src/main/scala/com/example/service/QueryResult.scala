@@ -10,16 +10,16 @@ object QueryResult {
   def list[T: FromMap](result: Result): List[T] = {
     result.asScala.toList.map { r =>
       val fields = {
-        r.fields().asScala.toList.map(p => (p.key(), p.value())).flatMap {
-          case (key, value) =>
-            if (value.hasType(TypeSystem.getDefault.STRING())) {
-              Some((key, value.asString()))
-            } else if (value.hasType(TypeSystem.getDefault.INTEGER()))
-              Some((key, value.asInt()))
-            // todo add other types
-            else {
-              None
-            }
+        r.fields().asScala.toList.map(p => (p.key(), p.value())).flatMap { case (key, value) =>
+          if (value.hasType(TypeSystem.getDefault.STRING())) {
+            Some((key, value.asString()))
+          } else if (value.hasType(TypeSystem.getDefault.INTEGER())) {
+            Some((key, value.asInt()))
+          } else if (value.hasType(TypeSystem.getDefault.BOOLEAN())) {
+            Some((key, value.asBoolean()))
+          } else {
+            None
+          }
         }
       }
       implicitly[FromMap[T]].fromMap(fields.toMap).right.get // TODO

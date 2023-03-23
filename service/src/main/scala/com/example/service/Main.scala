@@ -34,8 +34,8 @@ object Main extends IOApp {
     case GET -> Root / "users" / "name" / name =>
       val users = userRepository.getByName(name)
       Ok(users.mkString("\n"))
-    case GET -> Root / "users" / "create" / name / lastName => // TODO change it to POST
-      val created = userRepository.create(User(name, Some(lastName)))
+    case GET -> Root / "users" / "create" / name / lastName / isAdmin => // TODO change it to POST
+      val created = userRepository.create(User(name, Some(lastName), isAdmin.toLowerCase == "true"))
       Ok(created.toString)
   }
   val httpApp = Router("/" -> service).orNotFound
@@ -43,7 +43,7 @@ object Main extends IOApp {
     EmberServerBuilder
       .default[IO]
       .withHost(ipv4"0.0.0.0")
-      .withPort(port"8081")
+      .withPort(port"8080")
       .withHttpApp(httpApp)
       .build
       .use(_ => IO.never)

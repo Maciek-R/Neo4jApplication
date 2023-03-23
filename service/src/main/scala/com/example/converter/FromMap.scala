@@ -8,12 +8,12 @@ object FromMap {
 
   def apply[T](implicit FM: FromMap[T]): FromMap[T] = FM
 
-  implicit def generic[T](implicit FV: FromValue[T]): FromMap[T] =
+  implicit def generic[T: FromValue]: FromMap[T] =
     new FromMap[T] {
       override def fromMap(
           map: Map[String, Any]
       ): Either[FromValueExtractionError, T] =
-        FV.fromValue(Some(map))
+        implicitly[FromValue[T]].fromValue(Some(map))
     }
 
 }
