@@ -1,7 +1,7 @@
 package com.example.converter
 
 trait FromMap[T] {
-  def fromMap(map: Map[String, Any]): T
+  def fromMap(map: Map[String, Any]): Either[FromValueExtractionError, T]
 }
 
 object FromMap {
@@ -10,7 +10,10 @@ object FromMap {
 
   implicit def generic[T](implicit FV: FromValue[T]): FromMap[T] =
     new FromMap[T] {
-      override def fromMap(map: Map[String, Any]): T = FV.fromValue(Some(map))
+      override def fromMap(
+          map: Map[String, Any]
+      ): Either[FromValueExtractionError, T] =
+        FV.fromValue(Some(map))
     }
 
 }

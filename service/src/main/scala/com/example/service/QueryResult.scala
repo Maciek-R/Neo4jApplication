@@ -22,7 +22,7 @@ object QueryResult {
             }
         }
       }
-      implicitly[FromMap[T]].fromMap(fields.toMap)
+      implicitly[FromMap[T]].fromMap(fields.toMap).right.get // TODO
     }
   }
 }

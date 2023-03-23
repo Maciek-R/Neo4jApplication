@@ -9,12 +9,19 @@ trait FromValueDerivation {
 
   def join[T](caseClass: CaseClass[FromValue, T]): FromValue[T] =
     new FromValue[T] {
-      override def fromValue(value: Option[Any]): T = {
-        val map = value.map(_.asInstanceOf[Map[String, Any]]).get
-        val yyy = caseClass.constructEither { param =>
-          Right(param.typeclass.fromValue(map.get(param.label)))
+      override def fromValue(
+          value: Option[Any]
+      ): Either[FromValueExtractionError, T] = {
+        value.map(_.asInstanceOf[Map[String, Any]]) match {
+          case Some(map) =>
+            caseClass
+              .constructEither { param =>
+                param.typeclass.fromValue(map.get(param.label))
+              }
+              .left
+              .map(errors => FromValueExtractionError(errors.mkString(", ")))
+          case None => Left(FromValueExtractionError("Map error"))
         }
-        yyy.right.get // TODO
       }
     }
 
