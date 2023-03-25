@@ -16,11 +16,15 @@ trait FromValueDerivation {
           case Some(map) =>
             caseClass
               .constructEither { param =>
-                param.typeclass.fromValue(map.get(param.label))
+                param.typeclass.fromValue(map.get(param.label)).left.map {
+                  case MissingFieldError      => MissingFieldErrorDetails(s"Missing field ${param.label}")
+                  case ConversionError(error) => ConversionError(s"Field ${param.label} - $error")
+                  case e                      => e
+                }
               }
               .left
-              .map(errors => FromValueExtractionError(errors.mkString(", ")))
-          case None => Left(FromValueExtractionError("Map error"))
+              .map(errors => FromValueExtractionError(errors))
+          case None => Left(MapError(s"Cannot cast ${value} into Map[String, Any]"))
         }
       }
     }

@@ -17,5 +17,3 @@ object FromMap {
     }
 
 }
-
-case class Abc(str: String, str2: String, zxc: Int)

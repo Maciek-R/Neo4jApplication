@@ -1,6 +1,15 @@
 package com.example.converter
 
-case class FromValueExtractionError(error: String)
+trait FromValueExtractionError
+case object MissingFieldError extends FromValueExtractionError
+case class MissingFieldErrorDetails(error: String) extends FromValueExtractionError
+case class ConversionError(error: String) extends FromValueExtractionError
+case class FromValueExtractionErrors(errors: List[FromValueExtractionError]) extends FromValueExtractionError
+case class MapError(error: String) extends FromValueExtractionError
+
+object FromValueExtractionError {
+  def apply(errors: List[FromValueExtractionError]) = FromValueExtractionErrors(errors)
+}
 
 trait FromValue[T] {
   def fromValue(
@@ -14,7 +23,7 @@ trait MandatoryFromValue[T] extends FromValue[T] {
   def fromValue(value: Option[Any]): Either[FromValueExtractionError, T] = {
     value match {
       case Some(value) => fromValue(value)
-      case None        => Left(FromValueExtractionError("Missing???"))
+      case None        => Left(MissingFieldError)
     }
   }
 }
@@ -30,7 +39,7 @@ object FromValue extends FromValueDerivation {
     ): Either[FromValueExtractionError, String] = {
       value match {
         case v: String => Right(v)
-        case _         => Left(FromValueExtractionError("errStr"))
+        case _         => Left(ConversionError(s"Cannot convert ${value} into String"))
       }
     }
   }
@@ -41,7 +50,7 @@ object FromValue extends FromValueDerivation {
     ): Either[FromValueExtractionError, Int] =
       value match {
         case v: Int => Right(v)
-        case _      => Left(FromValueExtractionError("errInt"))
+        case _      => Left(ConversionError(s"Cannot convert ${value} into Int"))
       }
   }
 
@@ -51,7 +60,7 @@ object FromValue extends FromValueDerivation {
     ): Either[FromValueExtractionError, Boolean] =
       value match {
         case v: Boolean => Right(v)
-        case _          => Left(FromValueExtractionError("errBool"))
+        case _          => Left(ConversionError(s"Cannot convert ${value} into Boolean"))
       }
   }
 
