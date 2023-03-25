@@ -30,7 +30,7 @@ object QueryResult {
 case class Query(query: String, appConfig: AppConfig) {
   def execute[T](fconv: Result => T) = {
     val neo4jCredentials = appConfig.dataBaseConfig.neo4jCredentials
-    val driver = GraphDatabase.driver(
+    val driver = GraphDatabase.driver( // TODO there should be one connection instead of creating each time
       appConfig.dataBaseConfig.uri,
       AuthTokens.basic(neo4jCredentials.username, neo4jCredentials.password)
     )
