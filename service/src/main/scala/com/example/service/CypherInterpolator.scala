@@ -11,6 +11,7 @@ object CypherInterpolator {
         case v: Int           => s"$v"
         case v: Boolean       => s"$v"
         case None             => s"NULL"
+        case arg              => sys.error(s"Unhandled argument in cypher: $arg")
       }
       context.s(mappedArgs: _*)
     }
