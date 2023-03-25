@@ -1,37 +1,13 @@
 package com.example.service
 
-import com.example.service.CypherInterpolator.CypherOps
+import com.example.Neo4jTestSupport
+import org.scalatest.EitherValues
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, EitherValues}
 
-class UserRepositorySpec
-    extends AnyFlatSpec
-    with Matchers
-    with EitherValues
-    with BeforeAndAfterEach
-    with BeforeAndAfterAll {
+class UserRepositorySpec extends AnyFlatSpec with Neo4jTestSupport with Matchers with EitherValues {
 
-  val appConfig = AppConfig(
-    DataBaseConfig("bolt://localhost/7687", Neo4jCredentials("neo4j", "neo4jneo4j"))
-  ) // TODO update to different instance than main database
-  val userRepository = new UserRepositoryImpl(appConfig)
-
-  override def beforeEach(): Unit = {
-    deleteAll()
-  }
-
-  override def afterAll(): Unit = {
-    deleteAll()
-  }
-
-  private def deleteAll(): Unit = {
-    val query = cypher"MATCH (all) DELETE all"
-
-    Query(query, appConfig).execute { result =>
-      result.consume().counters().nodesDeleted()
-    }
-  }
+  val userRepository = new UserRepositoryImpl(testAppConfig)
 
   it should "create user and read all users" in {
     val user = User("name", Some("lastName"), true)
