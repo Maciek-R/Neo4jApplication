@@ -1,10 +1,8 @@
 package com.example.service
-
 object CypherInterpolator {
 
   implicit class CypherOps(context: StringContext) {
     def cypher(args: Any*): String = {
-      // TODO maybe Integer values will require other type of handling - without ''
       val mappedArgs = args.map {
         case Some(v: String)  => s"'$v'"
         case Some(v: Int)     => s"$v"

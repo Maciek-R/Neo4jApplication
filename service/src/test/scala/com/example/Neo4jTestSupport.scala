@@ -7,9 +7,7 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
 trait Neo4jTestSupport extends BeforeAndAfterEach with BeforeAndAfterAll {
   this: Suite =>
 
-  val testAppConfig = AppConfig(
-    DataBaseConfig("bolt://localhost/7687", Neo4jCredentials("neo4j", "neo4jneo4j"))
-  ) // TODO update to different instance than main database
+  val testAppConfig = AppConfig(DataBaseConfig("bolt://localhost/7687", Neo4jCredentials("neo4j", "neo4jneo4j")))
 
   override def beforeEach(): Unit = {
     deleteAll()
