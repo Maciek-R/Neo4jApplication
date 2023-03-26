@@ -1,10 +1,9 @@
 package com.example.converter
 
 import cats.data.NonEmptyList
-import com.example.service.User
 import org.scalacheck.{Arbitrary, Gen}
 
-trait GenericArbitrary {
+trait GenericArbitrary extends ArbitraryDerivation {
 
   implicit val strArbitrary: Arbitrary[String] = Arbitrary(Gen.uuid.map(_.toString))
   implicit val intArbitrary: Arbitrary[Int] = Arbitrary(Gen.numStr.map(_.toInt))
@@ -13,24 +12,7 @@ trait GenericArbitrary {
   implicit def optArbitrary[T: Arbitrary]: Arbitrary[Option[T]] =
     Arbitrary(Gen.option(implicitly[Arbitrary[T]].arbitrary))
 
-  // TODO create ArbitraryDerivation magnolia
-  implicit def nonEmptyListArbitrary[T: Arbitrary]: Arbitrary[NonEmptyList[T]] = {
-    val genT = implicitly[Arbitrary[T]].arbitrary
-    val nonEmptyListGen = for {
-      list <- Gen.listOf(genT)
-      elem <- genT
-    } yield {
-      NonEmptyList.fromListUnsafe(elem +: list)
-    }
-    Arbitrary(nonEmptyListGen)
-  }
+  implicit def nonEmptyListArbitrary[T: Arbitrary]: Arbitrary[NonEmptyList[T]] =
+    Arbitrary(Gen.nonEmptyListOf(implicitly[Arbitrary[T]].arbitrary).map(NonEmptyList.fromListUnsafe))
 
-  implicit val userArbitrary = Arbitrary {
-    for {
-      id <- strArbitrary.arbitrary
-      name <- strArbitrary.arbitrary
-      lastName <- optArbitrary[String].arbitrary
-      isAdmin <- boolArbitrary.arbitrary
-    } yield User(id, name, lastName, isAdmin)
-  }
 }

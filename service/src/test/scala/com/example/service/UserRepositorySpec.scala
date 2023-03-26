@@ -3,8 +3,7 @@ package com.example.service
 import cats.data.NonEmptyList
 import com.example.Neo4jTestSupport
 import com.example.converter.GenericArbitrary
-import org.scalacheck.Arbitrary._
-import org.scalacheck.Gen
+import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.EitherValues
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -19,6 +18,8 @@ class UserRepositorySpec
     with GenericArbitrary {
 
   val userRepository = new UserRepositoryImpl(testAppConfig)
+
+  implicit val userArbitrary: Arbitrary[User] = gen[User]
 
   implicit val config: PropertyCheckConfiguration = PropertyCheckConfiguration(minSuccessful = 3)
 
@@ -35,7 +36,9 @@ class UserRepositorySpec
 
   it should "create users and read by ids" in forAll {
     (users: List[User]) => // TODO limit max size of users maybe in config?
+      beforeEach()
       users.foreach(userRepository.create)
+      println(userRepository.readAll().map(_.id))
       val toPick =
         Gen
           .pick(Gen.chooseNum(0, Math.max(users.size - 1, 0)).sample.get, users) // TODO
