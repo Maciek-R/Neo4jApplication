@@ -8,11 +8,13 @@ import org.http4s._
 import org.http4s.circe.jsonEncoderOf
 import org.http4s.dsl.io._
 
+import scala.concurrent.duration.DurationInt
 import scala.util.Random
 
 class UserRoutes(userRepository: UserRepository) {
 
   implicit val userEntityEncoder: EntityEncoder[IO, List[Json]] = jsonEncoderOf
+  implicit val boolEncoder: EntityEncoder[IO, Boolean] = jsonEncoderOf
 
   def routes: HttpRoutes[IO] = {
     HttpRoutes.of[IO] {
@@ -21,6 +23,11 @@ class UserRoutes(userRepository: UserRepository) {
       case GET -> Root / "users" =>
         val users = userRepository.readAll()
         Ok(users.map(_.asJson))
+//      case GET -> Root / "users" / "add" =>
+//        val io = Temporal[IO].sleep(5.seconds) >> IO.delay {
+//          userRepository.create(User((new Random).nextString(10), "scheduler", Some("lastName"), true))
+//        }
+//        Ok(io)
       case GET -> Root / "users" / "name" / name =>
         val users = userRepository.getByName(name)
         Ok(users.map(_.asJson))
