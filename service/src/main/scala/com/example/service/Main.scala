@@ -23,7 +23,7 @@ object Main extends IOApp {
 
   val service = userRoutes.routes
   val httpApp = Router("/" -> service).orNotFound
-  override def run(args: List[String]): IO[ExitCode] = {
+  override def run(args: List[String]): IO[ExitCode] = { // TODO fix logging
     EmberServerBuilder
       .default[IO]
       .withHost(ipv4"0.0.0.0")

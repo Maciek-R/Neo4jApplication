@@ -9,16 +9,14 @@ trait Neo4jTestSupport extends BeforeAndAfterEach with BeforeAndAfterAll {
 
   val testAppConfig = AppConfig(DataBaseConfig("bolt://localhost/7687", Neo4jCredentials("neo4j", "neo4jneo4j")))
 
-  override def beforeEach(): Unit = {
-    deleteAll()
-  }
+  override def beforeEach(): Unit = deleteAll()
 
-  override def afterAll(): Unit = {
-    deleteAll()
-  }
+  override def afterEach(): Unit = deleteAll()
+
+  override def afterAll(): Unit = deleteAll()
 
   private def deleteAll(): Unit = {
-    val query = cypher"MATCH (all) DELETE all"
+    val query = cypher"MATCH (all) DETACH DELETE all"
 
     Query(query, testAppConfig).execute { result =>
       result.consume().counters().nodesDeleted()

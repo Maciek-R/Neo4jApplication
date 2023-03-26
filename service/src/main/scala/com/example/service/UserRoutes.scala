@@ -8,6 +8,8 @@ import org.http4s._
 import org.http4s.circe.jsonEncoderOf
 import org.http4s.dsl.io._
 
+import scala.util.Random
+
 class UserRoutes(userRepository: UserRepository) {
 
   implicit val userEntityEncoder: EntityEncoder[IO, List[Json]] = jsonEncoderOf
@@ -23,7 +25,8 @@ class UserRoutes(userRepository: UserRepository) {
         val users = userRepository.getByName(name)
         Ok(users.map(_.asJson))
       case GET -> Root / "users" / "create" / name / lastName / isAdmin => // TODO change it to POST
-        val created = userRepository.create(User(name, Some(lastName), isAdmin.toLowerCase == "true"))
+        val created =
+          userRepository.create(User((new Random).nextString(10), name, Some(lastName), isAdmin.toLowerCase == "true"))
         Ok(created.toString)
     }
   }

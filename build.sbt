@@ -19,7 +19,9 @@ lazy val service = (project in file("service"))
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser" % circeVersion,
       "com.softwaremill.magnolia1_2" %% "magnolia" % "1.1.3",
-      "org.scalatest" %% "scalatest" % "3.2.15" % "test"
+      "org.scalatest" %% "scalatest" % "3.2.15" % "test",
+      "org.scalacheck" %% "scalacheck" % "1.14.1" % "test",
+      "org.scalatestplus" %% "scalacheck-1-17" % "3.2.15.0" % "test"
     )
   )
 
