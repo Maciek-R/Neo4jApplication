@@ -38,7 +38,6 @@ class UserRepositorySpec
     (users: List[User]) => // TODO limit max size of users maybe in config?
       beforeEach()
       users.foreach(userRepository.create)
-      println(userRepository.readAll().map(_.id))
       val toPick =
         Gen
           .pick(Gen.chooseNum(0, Math.max(users.size - 1, 0)).sample.get, users) // TODO

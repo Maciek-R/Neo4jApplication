@@ -1,5 +1,8 @@
 package com.example.converter
 
+import com.example.service.User.{UserId, UserIdTag}
+import shapeless.tag.@@
+
 trait FromValueExtractionError
 case object MissingFieldError extends FromValueExtractionError
 case class MissingFieldErrorDetails(error: String) extends FromValueExtractionError
@@ -69,6 +72,19 @@ object FromValue extends FromValueDerivation {
       value match {
         case Some(value) => FV.fromValue(Some(value)).map(Some(_))
         case None        => Right(None)
+      }
+    }
+  }
+
+  implicit def stringTagged[U]: FromValue[String @@ U] = tagged
+  implicit def intTagged[U]: FromValue[Int @@ U] = tagged
+  implicit def boolTagged[U]: FromValue[Boolean @@ U] = tagged
+
+  private implicit def tagged[T: FromValue, U]: FromValue[T @@ U] = new MandatoryFromValue[T @@ U] {
+    override def fromValue(value: Any): Either[FromValueExtractionError, T @@ U] = {
+      value match {
+        case v: (T @@ U) => implicitly[FromValue[T]].fromValue(Some(v)).map(shapeless.tag[U][T])
+        case _           => Left(ConversionError(s"Cannot convert ${value} into tagged"))
       }
     }
   }

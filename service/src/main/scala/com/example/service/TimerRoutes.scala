@@ -17,14 +17,9 @@ class TimerRoutes(timerRepository: TimerRepository) {
   implicit val boolEncoder: EntityEncoder[IO, Boolean] = jsonEncoderOf
 
   def routes: HttpRoutes[IO] = {
-    HttpRoutes.of[IO] { case GET -> Root / "users" / "add" =>
-//        val io = Temporal[IO].sleep(5.seconds) >> IO.delay {
-//          userRepository.create(User((new Random).nextString(10), "scheduler", Some("lastName"), true))
-//        }
-//        Ok(io)
+    HttpRoutes.of[IO] { case GET -> Root / "timer" =>
       val timer = timerRepository.getTimer()
-      println(timer)
-      Ok("Timer")
+      Ok(s"Timer: ${timer}")
     }
   }
 

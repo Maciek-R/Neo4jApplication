@@ -3,6 +3,7 @@ package com.example.converter
 import org.scalatest.EitherValues
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import shapeless.tag.@@
 
 class FromValueSpec extends AnyFlatSpec with Matchers with EitherValues {
 
@@ -50,5 +51,22 @@ class FromValueSpec extends AnyFlatSpec with Matchers with EitherValues {
     FromValue.apply[Option[String]].fromValue(Some(123)) shouldBe Left(
       ConversionError("Cannot convert 123 into String")
     )
+  }
+
+  trait AnyTag
+
+  it should "convert tagged string" in {
+    val text: String @@ AnyTag = shapeless.tag[AnyTag][String]("text")
+    FromValue.apply[String @@ AnyTag].fromValue(Some(text)) shouldBe Right("text")
+  }
+  it should "return error when converting None to tagged String" in {
+    FromValue.apply[String @@ AnyTag].fromValue(None) shouldBe Left(MissingFieldError)
+  }
+  it should "convert option string tagged" in {
+    val text: String @@ AnyTag = shapeless.tag[AnyTag][String]("text")
+    FromValue.apply[Option[String @@ AnyTag]].fromValue(Some(text)) shouldBe Right(Some("text"))
+  }
+  it should "convert option string tagged to None when given None" in {
+    FromValue.apply[Option[String @@ AnyTag]].fromValue(None) shouldBe Right(None)
   }
 }
